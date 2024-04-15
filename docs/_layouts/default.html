@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Sigrid documentation</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no">
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&display=swap" />
+        <style>
+            {% include stylesheet.css %}
+        </style>
+        <script src="https://unpkg.com/lunr/lunr.js"></script>
+        <script src="/ci-training/search-index.js"></script>
+    </head>
+    
+    <body>
+        <div class="container">
+            {% include menu.html %}
+            <article>
+                {{ content }}
+            </article>
+        </div>
+        
+        <script>
+            function expandCurrentSection() {
+                const sections = document.querySelectorAll(".toc input[type=checkbox]");
+                const panels = document.querySelectorAll(".toc .pages");
+            
+                for (let i = 0; i < sections.length; i++) {
+                    const currentPageLink = findCurrentPageLink(panels[i]);
+                    
+                    if (currentPageLink) {
+                        sections[i].checked = true;
+                        currentPageLink.classList.add("currentSection");
+                        return;
+                    }
+                }          
+            }
+            
+            function findCurrentPageLink(panel) {
+                const links = [...panel.querySelectorAll("a.page")];
+                return links.find(link => document.location.pathname.startsWith(link.getAttribute("href")));
+            }
+            
+            document.addEventListener("DOMContentLoaded", event => expandCurrentSection());
+            
+            const searchIndex = lunr(function () {
+                this.ref("name")
+                this.field("text")
+
+                documents.forEach(function (doc) {
+                    this.add(doc)
+                }, this)
+            });
+        </script>
+    </body>
+</html>
